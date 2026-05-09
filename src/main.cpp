@@ -1,45 +1,92 @@
 #include <Arduino.h>
-#include "Display.h"
-#include "ScreenStartup.h"
+#include "display/Display.h"
+#include "display/screens/ScreenStartup.h"
+#include "display/screens/ScreenMenu.h"
+#include "display/screens/ScreenWifiMenu.h"
+#include "display/screens/ScreenWifiScan.h"
+#include "input/Input.h"
+
+enum AppState
+{
+    STATE_STARTUP,
+    STATE_MENU,
+    STATE_WIFI_MENU,
+    STATE_WIFI_SCAN
+};
+static AppState state = STATE_STARTUP;
 
 void setup()
 {
     Serial.begin(115200);
-    Display::init();
+    delay(100);
 
-    // Сбрасываем логику старта
-    // (тут нужен вызов функции сброса, если мы вынесли состояние)
+    Display::init();
+    initInput();
 }
 
 void loop()
 {
-    // Простой конечный автомат (FSM)
-    static enum { STARTUP,
-                  MENU,
-                  ACTIVE } state = STARTUP;
+    ButtonAction btn = getButtonAction();
 
     switch (state)
     {
-    case STARTUP:
-        // Вызываем логику старта. Если вернул 1 -> переходим дальше
+    case STATE_STARTUP:
         if (ScreenStartup_loop() == 1)
         {
-            state = MENU;
-            // Здесь инициализация следующего экрана
+            state = STATE_MENU;
+            ScreenMenu_init();
         }
         break;
 
-    case MENU:
-        // Логика меню...
-        Display::clear();
-        u8g2.drawStr(0, 20, "Main Menu");
-        u8g2.sendBuffer();
-        delay(2000);
-        state = ACTIVE;
+    case STATE_MENU:
+        ScreenMenu_draw();
+        if (btn == BTN_UP)
+            ScreenMenu_prev();
+        if (btn == BTN_DOWN)
+            ScreenMenu_next();
+
+        if (btn == BTN_SELECT)
+        {
+            uint8_t idx = ScreenMenu_getSelectedIndex();
+            Serial.printf("MAIN MENU SELECT -> idx: %d\n", idx);
+
+            if (idx == 3)
+            {
+                state = STATE_WIFI_MENU;
+                ScreenWifiMenu_init();
+            }
+            // Добавьте другие пункты по аналогии:
+            // if(idx == 2) { state = STATE_BT_MENU; ... }
+        }
         break;
 
-    case ACTIVE:
-        // Основной цикл пентест-инструмента
+    case STATE_WIFI_MENU:
+        ScreenWifiMenu_draw();
+        if (btn == BTN_LEFT)
+        {
+            state = STATE_MENU;
+            ScreenMenu_init();
+        }
+        else if (btn == BTN_SELECT)
+        {
+            uint8_t idx = ScreenWifiMenu_getSelectedIndex();
+            Serial.printf("WIFI MENU SELECT -> idx: %d\n", idx);
+            if (idx == 0)
+            {
+                state = STATE_WIFI_SCAN;
+                ScreenWifiScan_init();
+            }
+            // case 1: Graph...
+        }
+        break;
+
+    case STATE_WIFI_SCAN:
+        ScreenWifiScan_draw();
+        if (ScreenWifiScan_handleInput())
+        {
+            state = STATE_WIFI_MENU;
+            ScreenWifiMenu_init();
+        }
         break;
     }
 }

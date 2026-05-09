@@ -4,7 +4,6 @@
 void ScreenStartup_draw()
 {
     u8g2.clearBuffer();
-    // centring: (128 - 93) / 2 = 17
     u8g2.drawXBMP(0, 0, LOGO_WIDTH, LOGO_HEIGHT, logo_start_screen_bits);
     u8g2.sendBuffer();
 }
@@ -22,8 +21,7 @@ uint8_t ScreenStartup_loop()
         ScreenStartup_draw();
     }
 
-    // Проверка: прошло ли 3 секунды?
-    if (millis() - start_time >= 10000)
+    if (millis() - start_time >= 3000)
     {
         start_time = 0;
         return 1;
