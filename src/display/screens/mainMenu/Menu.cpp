@@ -1,7 +1,7 @@
 #include "display/Display.h"
 #include "display/assets/icons.h"
 #include "input/Input.h"
-#include "ScreenMenu.h"
+#include "Menu.h"
 
 struct MenuItem
 {
@@ -28,8 +28,9 @@ void ScreenMenu_init()
 
 void ScreenMenu_draw()
 {
+
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB10_tr);
+    u8g2.setFont(u8g2_font_timR12_tr);
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
 

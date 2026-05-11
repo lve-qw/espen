@@ -1,7 +1,7 @@
 #include "display/Display.h"
 #include <WiFi.h>
 #include "input/Input.h"
-#include "ScreenWifiScan.h"
+#include "Scan.h"
 
 // Простые состояния: ждём → готово → ошибка
 enum ScanState

@@ -5,17 +5,20 @@
 
 #include "display/Display.h"
 #include "display/screens/ScreenStartup.h"
-#include "display/screens/ScreenMenu.h"
-#include "display/screens/ScreenWifiMenu.h"
-#include "display/screens/ScreenWifiScan.h"
+#include "display/screens/mainMenu/Menu.h"
 #include "input/Input.h"
+
+#include "display/screens/wifiMenu/menu/Menu.h"
+#include "display/screens/wifiMenu/scan/Scan.h"
+#include "display/screens/wifiMenu/graph/Graph.h"
 
 enum AppState
 {
     STATE_STARTUP,
     STATE_MENU,
     STATE_WIFI_MENU,
-    STATE_WIFI_SCAN
+    STATE_WIFI_SCAN,
+    STATE_WIFI_GRAPH,
 };
 static AppState state = STATE_STARTUP;
 
@@ -36,8 +39,6 @@ void setup()
     delay(200);
     WiFi.mode(WIFI_STA);
     delay(100);
-
-    Serial.printf("✅ Wi-Fi ready: mode=%d, status=%d\n", WiFi.getMode(), WiFi.status());
 
     Display::init();
     initInput();
@@ -81,6 +82,12 @@ void loop()
 
     case STATE_WIFI_MENU:
         ScreenWifiMenu_draw();
+
+        if (btn == BTN_UP)
+            ScreenWifiMenu_prev();
+        if (btn == BTN_DOWN)
+            ScreenWifiMenu_next();
+
         if (btn == BTN_LEFT)
         {
             state = STATE_MENU;
@@ -90,12 +97,28 @@ void loop()
         {
             uint8_t idx = ScreenWifiMenu_getSelectedIndex();
             Serial.printf("WIFI MENU SELECT -> idx: %d\n", idx);
-            if (idx == 0)
+
+            switch (idx)
             {
+            case 0:
                 state = STATE_WIFI_SCAN;
                 ScreenWifiScan_init();
+                break;
+            case 1:
+                state = STATE_WIFI_GRAPH;
+                ScreenWifiGraph_init();
+                break;
+            case 2: /* state = STATE_WIFI_DEAUTH; ... */
+                break;
+            case 3: /* state = STATE_WIFI_BEFLOOD; ... */
+                break;
+            case 4: /* state = STATE_WIFI_PROBEFLOOD; ... */
+                break;
+            case 5: /* state = STATE_WIFI_PMKID; ... */
+                break;
+            default:
+                break;
             }
-            // case 1: Graph...
         }
         break;
 
@@ -105,6 +128,13 @@ void loop()
         {
             state = STATE_WIFI_MENU;
             ScreenWifiMenu_init();
+        }
+        break;
+    case STATE_WIFI_GRAPH:
+        ScreenWifiGraph_draw();
+        if (ScreenWifiGraph_handleInput(btn))
+        {
+            state = STATE_WIFI_MENU;
         }
         break;
     }

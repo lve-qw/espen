@@ -1,6 +1,6 @@
 #include "display/Display.h"
 #include "input/Input.h"
-#include "ScreenWifiMenu.h"
+#include "Menu.h"
 
 static const char *items[] = {"Scan AP", "Graph", "Deauth", "BeFlood", "ProbeFlood", "PMKID"};
 static const uint8_t ITEM_COUNT = 6;
@@ -16,7 +16,7 @@ void ScreenWifiMenu_init()
 void ScreenWifiMenu_draw()
 {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB10_tr);
+    u8g2.setFont(u8g2_font_timR12_tr);
     u8g2.setFontMode(1);
 
     const uint8_t LINE_H = 14, START_Y = 13, TEXT_X = 2, CUR = 9;
