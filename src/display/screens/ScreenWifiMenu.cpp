@@ -49,7 +49,6 @@ bool ScreenWifiMenu_wasSelected()
 }
 uint8_t ScreenWifiMenu_getSelectedIndex() { return currentIndex; }
 
-// Оставляем для main.cpp, если захотите передать кнопку явно
 bool ScreenWifiMenu_handleInput(ButtonAction btn)
 {
     if (btn == BTN_UP)

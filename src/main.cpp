@@ -1,4 +1,8 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <esp_netif.h>
+#include <nvs_flash.h>
+
 #include "display/Display.h"
 #include "display/screens/ScreenStartup.h"
 #include "display/screens/ScreenMenu.h"
@@ -18,7 +22,22 @@ static AppState state = STATE_STARTUP;
 void setup()
 {
     Serial.begin(115200);
+    delay(1500);
+
+    ESP_ERROR_CHECK(nvs_flash_init());
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    WiFi.mode(WIFI_STA);
+    delay(50);
+    WiFi.begin("init", "dummy_password");
     delay(100);
+    WiFi.disconnect(true);
+    delay(200);
+    WiFi.mode(WIFI_STA);
+    delay(100);
+
+    Serial.printf("✅ Wi-Fi ready: mode=%d, status=%d\n", WiFi.getMode(), WiFi.status());
 
     Display::init();
     initInput();
