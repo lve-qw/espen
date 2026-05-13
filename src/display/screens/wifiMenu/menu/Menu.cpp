@@ -19,7 +19,7 @@ void ScreenWifiMenu_draw()
     u8g2.setFont(u8g2_font_timR12_tr);
     u8g2.setFontMode(1);
 
-    const uint8_t LINE_H = 14, START_Y = 13, TEXT_X = 2, CUR = 9;
+    const uint8_t LINE_H = 32, START_Y = 13, TEXT_X = 2, CUR = 9;
     for (uint8_t i = 0; i < ITEM_COUNT; i++)
     {
         int y = START_Y + i * LINE_H;

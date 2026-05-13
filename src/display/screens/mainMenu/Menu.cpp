@@ -34,7 +34,7 @@ void ScreenMenu_draw()
     u8g2.setFontMode(1);
     u8g2.setBitmapMode(1);
 
-    const uint8_t LINE_HEIGHT = 14;
+    const uint8_t LINE_HEIGHT = 32;
     const uint8_t START_Y = 13;
     const uint8_t TEXT_BASE_X = 2;
     const uint8_t CURSOR_SHIFT = 9;
